@@ -1,0 +1,8 @@
+Nom: Bond
+Prénom: James
+Date de Naissance: 12/10/1984
+Adresse: 35 route nationale
+Email: james.bond@gmail.com
+Login: jamesbond007
+Mot de passe: bondjames007
+Utilisateur actif: true
