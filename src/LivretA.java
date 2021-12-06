@@ -5,4 +5,8 @@ public class LivretA extends Savings {
 	public LivretA(int nbAccount, int agencyCode, User user, float balance, boolean overdraft) {
 		super(nbAccount, agencyCode, user, balance, overdraft);
 	}
+
+	public float getCosts() {
+		return costs;
+	}
 }

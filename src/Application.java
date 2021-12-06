@@ -1,10 +1,10 @@
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Application {
 	private Scanner scanner = new Scanner(System.in);
 	
-	public void authentification() throws FileNotFoundException {
+	public void authentification() throws IOException {
 		String login;
 		String password;
 		
@@ -13,13 +13,15 @@ public class Application {
 		System.out.println("Veuillez saisir votre mot de passe");
 		password = scanner.nextLine();
 		
-		if (new FakeDataBase().checkUser(login, password)) {
-			User user = null;
+		if (new FakeDataBase(login, password).checkUser()) {
+			User user = new FakeDataBase(login, password).createUserWithLoginAndPassword();
 			displayMenu(user);
+		} else {
+			System.out.println("Login ou Mot de passe incorrect");
 		}
 	}
 
-	public void displayMenu(User user) throws FileNotFoundException {
+	private void displayMenu(User user) throws IOException {
 		if (user instanceof Admin) {
 			displayAdminMenu(user);
 		} else if (user instanceof Advisor) {
@@ -29,15 +31,15 @@ public class Application {
 		}
 	}
 
-	private void displayAdminMenu(User user) throws FileNotFoundException {
+	private void displayAdminMenu(User user) throws IOException {
 		new AdminMenu(user).action();
 	}
 	
-	private void displayAdvisorMenu(User user) {
+	private void displayAdvisorMenu(User user) throws IOException {
 		new AdvisorMenu(user).action();
 	}
 
-	private void displayClientMenu(User user) {
+	private void displayClientMenu(User user) throws IOException {
 		new ClientMenu(user).action();
 	}
 }

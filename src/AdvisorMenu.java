@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class AdvisorMenu extends UserMenu {
@@ -29,7 +30,7 @@ public class AdvisorMenu extends UserMenu {
 	}
 	
 	@Override
-	protected void action() throws FileNotFoundException {
+	protected void action() throws IOException {
 		int choiceUser;
 		
 		displayMenu();
@@ -77,19 +78,19 @@ public class AdvisorMenu extends UserMenu {
 		}
 	}
 
-	protected void createAccount() {
-		((Advisor) user).createAccount(user);
+	protected void createAccount() throws FileNotFoundException {
+		((Advisor) user).createAccount();
 	}
 	
 	protected void createUser() {
 		((Advisor) user).createUser();
 	}
 	
-	protected void changeUserAdress() {
-		((Advisor) user).changeUserAdress(user);
+	protected void changeUserAdress() throws IOException {
+		((Advisor) user).changeUserAdress();
 	}
 	
 	protected void changeUserInfos() {
-		((Advisor) user).changeUserInfos(user);
+		((Advisor) user).changeUserInfos();
 	}
 }

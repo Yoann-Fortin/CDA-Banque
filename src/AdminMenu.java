@@ -1,4 +1,4 @@
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class AdminMenu extends AdvisorMenu {
@@ -29,7 +29,7 @@ public class AdminMenu extends AdvisorMenu {
 	}
 	
 	@Override
-	protected void action() throws FileNotFoundException {
+	protected void action() throws IOException {
 		int choiceUser;
 		
 		displayMenu();

@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -31,7 +32,7 @@ public abstract class UserMenu {
 		System.out.println();
 	}
 	
-	protected void action() throws FileNotFoundException {
+	protected void action() throws FileNotFoundException, IOException {
 		int choiceUser;
 		
 		displayMenu();
