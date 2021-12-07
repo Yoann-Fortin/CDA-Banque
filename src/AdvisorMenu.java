@@ -12,10 +12,10 @@ public class AdvisorMenu extends UserMenu {
 	
 	protected ArrayList<String> addActionsInList() {
 		listAdvisorActions.addAll(listUserActions);
-		listAdvisorActions.add("Créer un compte");
-		listAdvisorActions.add("Créer un client");
-		listAdvisorActions.add("Mettre à jour l'adrese d'un client");
-		listAdvisorActions.add("Mettre à jour les informations d'un client");
+		listAdvisorActions.add("CrÃ©er un compte");
+		listAdvisorActions.add("CrÃ©er un client");
+		listAdvisorActions.add("Mettre Ã  jour l'adrese d'un client");
+		listAdvisorActions.add("Mettre Ã  jour les informations d'un client");
 		return listAdvisorActions;
 	}
 	

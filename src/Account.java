@@ -1,4 +1,10 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Scanner;
 
 public abstract class Account {
@@ -25,39 +31,280 @@ public abstract class Account {
 		System.out.println(nbAccount + "\t" + balance + "\t\t" + emoji());
 	}
 	
-	protected void printTransactions() {
-		for (String transaction : transactions) {
-			System.out.println(transaction);
+	protected void printTransactions() throws FileNotFoundException {
+		String path = System.getProperty("user.dir") + "\\Transactions\\" + nbAccount + ".txt";
+		File transaction = new File(path);
+		
+		if (transaction.exists()) {
+			ArrayList<String> file = new ArrayList<String>();
+			Scanner scan = new Scanner(transaction);
+				
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			scan.close();
+			
+			for (String string : file) {
+				System.out.println(string);
+			}
 		}
 	}
 	
-	protected void transfer(Account account) {
+	protected void printTransactionsText() throws IOException {
+		String path = System.getProperty("user.dir") + "\\Transactions\\" + nbAccount + ".txt";
+		String copyPath = System.getProperty("user.dir") + nbAccount + ".txt";
+		File transaction = new File(path);
+		File copy = new File(copyPath);
+		
+		if (transaction.exists()) {
+			ArrayList<String> file = new ArrayList<String>();
+			Scanner scan = new Scanner(transaction);
+				
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			scan.close();
+			
+			if(copy.exists()) {
+				copy.delete();
+			}
+			copy.createNewFile();
+			
+			try {
+				FileWriter writer = new FileWriter(copy);
+				for (String string : file) {
+					writer.write(string);
+				}
+				writer.close();
+				
+			} catch (Exception e) {
+				System.out.println("Une erreur est survenue");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	protected void transfer(Account account) throws IOException {
 		float value;
-		System.out.println("Veuillez saisir le montant à tansférer");
+		System.out.println("Veuillez saisir le montant Ã  tansfÃ©rer");
 		value = scanner.nextFloat();
 		
 		if (value > balance) {
-			System.out.println("Le montant saisi est supérieur à la liquidité disponible sur ce compte");
+			System.out.println("Le montant saisi est supÃ©rieur Ã  la liquiditÃ© disponible sur ce compte");
 		} else {
-			account.setBalance(account.getBalance() + value);
 			this.setBalance(this.getBalance() - value);
-			transactions.add("Transfert de " + value + " vers le compte N° " + account.getNbAccount() + " le ");
+			writeTransactionOtherAccount(account, value);
+			writeOtherAccount(account);
+		}
+	}
+
+	private void writeOtherAccount(Account account) throws FileNotFoundException, IOException {
+		String path = System.getProperty("user.dir") + "\\Accounts\\" + account.getNbAccount() + ".txt";
+		File currentAccount = new File(path);
+		
+		if (currentAccount.exists()) {
+			ArrayList<String> file = new ArrayList<String>();
+			Scanner scan = new Scanner(currentAccount);
+				
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			scan.close();
+			
+			currentAccount.delete();
+			currentAccount.createNewFile();
+			
+			try {
+				FileWriter writerAccount = new FileWriter(currentAccount);
+				writerAccount.write(file.get(0) + "\n");
+				writerAccount.write(file.get(1) + "\n");
+				writerAccount.write(file.get(2) + "\n");
+				writerAccount.write(file.get(3) + "\n");
+				writerAccount.write("Solde: " + account.getBalance() + "\n");
+				writerAccount.write(file.get(5) + "\n");
+				writerAccount.write(file.get(6) + "\n");
+				writerAccount.close();
+				
+			} catch (Exception e) {
+				System.out.println("Une erreur est survenue");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void writeThisAccount() throws FileNotFoundException, IOException {
+		String path = System.getProperty("user.dir") + "\\Accounts\\" + nbAccount + ".txt";
+		File currentAccount = new File(path);
+		
+		if (currentAccount.exists()) {
+			ArrayList<String> file = new ArrayList<String>();
+			Scanner scan = new Scanner(currentAccount);
+				
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			scan.close();
+			
+			currentAccount.delete();
+			currentAccount.createNewFile();
+			
+			try {
+				FileWriter writerAccount = new FileWriter(currentAccount);
+				writerAccount.write(file.get(0) + "\n");
+				writerAccount.write(file.get(1) + "\n");
+				writerAccount.write(file.get(2) + "\n");
+				writerAccount.write(file.get(3) + "\n");
+				writerAccount.write("Solde: " + getBalance() + "\n");
+				writerAccount.write(file.get(5) + "\n");
+				writerAccount.write(file.get(6) + "\n");
+				writerAccount.close();
+				
+			} catch (Exception e) {
+				System.out.println("Une erreur est survenue");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void writeTransactionOtherAccount(Account account, float value) throws FileNotFoundException, IOException {
+		String path = System.getProperty("user.dir") + "\\Transactions\\" + account.getNbAccount() + ".txt";
+		File transaction = new File(path);
+		
+		if (transaction.exists()) {
+			ArrayList<String> file = new ArrayList<String>();
+			Scanner scan = new Scanner(transaction);
+				
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			scan.close();
+			
+			transaction.delete();
+			transaction.createNewFile();
+			
+			try {
+				FileWriter writer = new FileWriter(path);
+				for (String string : file) {
+					writer.write(string + "\n");
+				}
+				writer.write("Compte crÃ©diter de " + value + " depuis le compte NÂ° " + nbAccount + " le " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()) + "\n");
+				writer.close();
+				
+			} catch (Exception e) {
+				System.out.println("Une erreur est survenue");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void writeTransactionThisAccount(Account account, float value) throws FileNotFoundException, IOException {
+		String path = System.getProperty("user.dir") + "\\Transactions\\" + nbAccount + ".txt";
+		File transaction = new File(path);
+		
+		if (transaction.exists()) {
+			ArrayList<String> file = new ArrayList<String>();
+			Scanner scan = new Scanner(transaction);
+				
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			scan.close();
+			
+			transaction.delete();
+			transaction.createNewFile();
+			
+			try {
+				FileWriter writer = new FileWriter(path);
+				for (String string : file) {
+					writer.write(string + "\n");
+				}
+				writer.write("Transfert de " + value + " vers le compte NÂ° " + account.getNbAccount() + " le " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()) + "\n");
+				writer.close();
+				
+			} catch (Exception e) {
+				System.out.println("Une erreur est survenue");
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	protected void addCash(float value) {
-		setBalance(getBalance() + value);
-		transactions.add("Dépot de " + value + " euros le ");
+	protected void addCash(float value) throws IOException {
+		setBalance(getBalance() + value);transactions.add("DÃ©pÃ´t de " + value + " euros le ");
+		writeAddTransaction(value);
+		writeThisAccount();
+	}
+
+	private void writeAddTransaction(float value) throws FileNotFoundException, IOException {
+		String path = System.getProperty("user.dir") + "\\Transactions\\" + nbAccount + ".txt";
+		File transaction = new File(path);
+		
+		if (transaction.exists()) {
+			ArrayList<String> file = new ArrayList<String>();
+			Scanner scan = new Scanner(transaction);
+				
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			scan.close();
+			
+			transaction.delete();
+			transaction.createNewFile();
+			
+			try {
+				FileWriter writer = new FileWriter(path);
+				for (String string : file) {
+					writer.write(string + "\n");
+				}
+				writer.write("DÃ©pÃ´t de " + value + " euros le " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()) + "\n");
+				writer.close();
+				
+			} catch (Exception e) {
+				System.out.println("Une erreur est survenue");
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	protected void creditCash(Account account, float value) {
-		setBalance(getBalance() + value);
-		transactions.add("Compte crédité de " + value + " euros depuis le compte N° " + account.getNbAccount() + " le ");
+	protected void creditCash(Account account, float value) throws FileNotFoundException, IOException {
+		setBalance(getBalance() + value);transactions.add("Compte crÃ©ditÃ© de " + value + " euros depuis le compte NÂ° " + account.getNbAccount() + " le " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		writeTransactionThisAccount(account, value);
+		writeThisAccount();
 	}
 	
-	protected void soustractCash(float value) {
+	protected void soustractCash(float value) throws IOException {
 		setBalance(getBalance() - value);
-		transactions.add("Retrait de " + value + " euros le ");
+		writeSoustractTransaction(value);
+	}
+
+	private void writeSoustractTransaction(float value) throws FileNotFoundException, IOException {
+		String path = System.getProperty("user.dir") + "\\Transactions\\" + nbAccount + ".txt";
+		File transaction = new File(path);
+		
+		if (transaction.exists()) {
+			ArrayList<String> file = new ArrayList<String>();
+			Scanner scan = new Scanner(transaction);
+				
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			scan.close();
+			
+			transaction.delete();
+			transaction.createNewFile();
+			
+			try {
+				FileWriter writer = new FileWriter(path);
+				for (String string : file) {
+					writer.write(string + "\n");
+				}
+				writer.write("Retrait de " + value + " euros le " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()) + "\n");
+				writer.close();
+				
+			} catch (Exception e) {
+				System.out.println("Une erreur est survenue");
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	protected String emoji() {

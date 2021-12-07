@@ -1,6 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +12,8 @@ public class FakeDataBase {
 	private String login;
 	private String password;
 	private String nbAccount;
-	private ArrayList<String> listFiles = new ArrayList<String>();
+	private ArrayList<String> listUsersFiles = new ArrayList<String>();
+	private ArrayList<String> listAccountsFiles = new ArrayList<String>();
 	private ArrayList<String> userList = new ArrayList<String>();
 	
 	public FakeDataBase(String login, String password) {
@@ -24,27 +25,42 @@ public class FakeDataBase {
 		this.nbAccount = nbAccount;
 	}
 	
-	private ArrayList<String> listAllFiles() {
-		File path = new File(System.getProperty("user.dir"));
+	private ArrayList<String> listAllUsers() {
+		File path = new File(System.getProperty("user.dir") + "\\Users\\");
 		
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path.toString()), "*.txt")) {
 			for (Path file : stream) {
-				listFiles.add((file.getFileName().toString()));
+				listUsersFiles.add((file.getFileName().toString()));
 			}
-			return listFiles;
+			return listUsersFiles;
 		} catch (Exception e) {
 			System.out.println("Une erreur est survenue");
 			e.printStackTrace();
 		}
-		return listFiles;
+		return listUsersFiles;
 	}
 	
-	public boolean checkUser() throws FileNotFoundException {
-		listAllFiles();
-		ArrayList<String> file = new ArrayList<String>();
+	private ArrayList<String> listAllAccounts() {
+		File path = new File(System.getProperty("user.dir") + "\\Accounts\\");
 		
-		for (String currentFile : listFiles) {
-			Scanner scan = new Scanner(new File(System.getProperty("user.dir") + "\\" + currentFile));
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path.toString()), "*.txt")) {
+			for (Path file : stream) {
+				listAccountsFiles.add((file.getFileName().toString()));
+			}
+			return listAccountsFiles;
+		} catch (Exception e) {
+			System.out.println("Une erreur est survenue");
+			e.printStackTrace();
+		}
+		return listAccountsFiles;
+	}
+	
+	public boolean checkUser() throws IOException {
+		listAllUsers();
+		ArrayList<String> file = new ArrayList<String>();
+		for (String currentFile : listUsersFiles) {
+			File files = new File(System.getProperty("user.dir") + "\\Users\\" + currentFile);
+			Scanner scan = new Scanner(files);
 			
 			while(scan.hasNextLine()) {
 				file.add(scan.nextLine()); 
@@ -60,12 +76,13 @@ public class FakeDataBase {
 	}
 
 	@SuppressWarnings("resource")
-	public User createUserWithLoginAndPassword() throws FileNotFoundException {
-		listAllFiles();
+	public User createUserWithLoginAndPassword() throws IOException {
+		listAllUsers();
 		ArrayList<String> file = new ArrayList<String>();
+		User user = null;
 		
-		for (String currentFile : listFiles) {
-			Scanner scan = new Scanner(new File(System.getProperty("user.dir") + "\\" + currentFile));
+		for (String currentFile : listUsersFiles) {
+			Scanner scan = new Scanner(new File(System.getProperty("user.dir") + "\\Users\\" + currentFile));
 			
 			while(scan.hasNextLine()) {
 				file.add(scan.nextLine()); 
@@ -75,73 +92,106 @@ public class FakeDataBase {
 				String identifier = parseIdentifier(currentFile);
 				userList.add(identifier);
 				
-				String lastName = parseLastName(file.get(0));
-				userList.add(lastName);
-				
-				String firstName = parseFirstName(file.get(1));
-				userList.add(firstName);
-				
-				String birthDate = parseBirthDate(file.get(2));
-				userList.add(birthDate);
-				
-				String adress = parseAdress(file.get(3));
-				userList.add(adress);
-				
-				String email = parseEmail(file.get(4));
-				userList.add(email);
-				
-				String currentLogin = parseLogin(file.get(5));
-				userList.add(currentLogin);
-				
-				String currentPassword = parsePassword(file.get(6));
-				userList.add(currentPassword);
-				
-				switch (login.length()) {
-				case 5:
-					return new Admin
-							(
-								userList.get(0),
-								userList.get(1),
-								userList.get(2),
-								userList.get(3), 
-								userList.get(4), 
-								userList.get(5), 
-								userList.get(6), 
-								userList.get(7)
-							);
-				case 6:
-					return new Advisor
-							(
-								userList.get(0),
-								userList.get(1),
-								userList.get(2),
-								userList.get(3), 
-								userList.get(4), 
-								userList.get(5), 
-								userList.get(6), 
-								userList.get(7)
-							);
-				default:
-					return new Client
-							(
-								userList.get(0),
-								userList.get(1),
-								userList.get(2),
-								userList.get(3), 
-								userList.get(4), 
-								userList.get(5), 
-								userList.get(6), 
-								userList.get(7)
-							);
-				}	
+				if(checkAccount(userList)) {
+					return affectAccountWithUser(identifier);
+				} else {
+					String lastName = parseLastName(file.get(0));
+					userList.add(lastName);
+					
+					String firstName = parseFirstName(file.get(1));
+					userList.add(firstName);
+					
+					String birthDate = parseBirthDate(file.get(2));
+					userList.add(birthDate);
+					
+					String adress = parseAdress(file.get(3));
+					userList.add(adress);
+					
+					String email = parseEmail(file.get(4));
+					userList.add(email);
+					
+					String currentLogin = parseLogin(file.get(5));
+					userList.add(currentLogin);
+					
+					String currentPassword = parsePassword(file.get(6));
+					userList.add(currentPassword);
+					
+					user = createUser();
+				}
 			}
 			scan.close();
 		}
-		return null;
+		return user;
+	}
+
+	private User createUser() {
+		User user;
+		switch (login.length()) {
+		case 5:
+			user =  new Admin
+					(
+						userList.get(0),
+						userList.get(1),
+						userList.get(2),
+						userList.get(3), 
+						userList.get(4), 
+						userList.get(5), 
+						userList.get(6), 
+						userList.get(7)
+					);
+			break;
+		case 6:
+			user =  new Advisor
+					(
+						userList.get(0),
+						userList.get(1),
+						userList.get(2),
+						userList.get(3), 
+						userList.get(4), 
+						userList.get(5), 
+						userList.get(6), 
+						userList.get(7)
+					);
+			break;
+		default:
+			user = new Client
+					(
+						userList.get(0),
+						userList.get(1),
+						userList.get(2),
+						userList.get(3), 
+						userList.get(4), 
+						userList.get(5), 
+						userList.get(6), 
+						userList.get(7)
+					);
+			break;
+		}
+		return user;
+	}
+	
+	private boolean checkAccount(ArrayList<String> identifiers) throws IOException {
+		listAllAccounts();
+		ArrayList<String> file = new ArrayList<String>();
+		
+		for (String currentFile : listAccountsFiles) {
+			Scanner scan = new Scanner(new File(System.getProperty("user.dir") + "\\Accounts\\" + currentFile));
+			
+			while(scan.hasNextLine()) {
+				file.add(scan.nextLine()); 
+			}
+			
+			if(parseUserID(file.get(3)).equals(identifiers.get(0))) {
+				scan.close();
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public User createUserWithIdentifier(String identifier) throws FileNotFoundException {
-		String path = System.getProperty("user.dir") + nbAccount + ".txt";
+		String path = System.getProperty("user.dir") + "\\Users\\" + identifier + ".txt";
+		User user;
 		
 		File client = new File(path);
 		
@@ -177,68 +227,34 @@ public class FakeDataBase {
 			String currentPassword = parsePassword(file.get(6));
 			userList.add(currentPassword);
 			
-			switch (currentLogin.length()) {
-			case 5:
-				return new Admin
-						(
-							userList.get(0),
-							userList.get(1),
-							userList.get(2),
-							userList.get(3), 
-							userList.get(4), 
-							userList.get(5), 
-							userList.get(6), 
-							userList.get(7)
-						);
-			case 6:
-				return new Advisor
-						(
-							userList.get(0),
-							userList.get(1),
-							userList.get(2),
-							userList.get(3), 
-							userList.get(4), 
-							userList.get(5), 
-							userList.get(6), 
-							userList.get(7)
-						);
-			default:
-				return new Client
-						(
-							userList.get(0),
-							userList.get(1),
-							userList.get(2),
-							userList.get(3), 
-							userList.get(4), 
-							userList.get(5), 
-							userList.get(6), 
-							userList.get(7)
-						);
-			}
+			user = createUser();
+			return user;
 		}
 		return null;
 	}
 	
-	private void affectAccountWithUser(String userID) throws FileNotFoundException {
-		listAllFiles();
+	private User affectAccountWithUser(String userID) throws FileNotFoundException {
+		listAllAccounts();
 		ArrayList<String> file = new ArrayList<String>();
+		User user = null;
 		
-		for (String currentFile : listFiles) {
-			Scanner scan = new Scanner(new File(System.getProperty("user.dir") + "\\" + currentFile));
+		for (String currentFile : listAccountsFiles) {
+			Scanner scan = new Scanner(new File(System.getProperty("user.dir") + "\\Accounts\\" + currentFile));
 			
 			while(scan.hasNextLine()) {
 				file.add(scan.nextLine()); 
 			}
 			
-			if(parseUserID(file.get(5)).equals(userID)) {
-				User user = createUserWithIdentifier(userID);
-				user.setListAccounts(createAccount(currentFile));
+			if(parseUserID(file.get(3)).equals(userID)) {
+				user = createUserWithIdentifier(userID);
+				user.setListAccounts(createAccount(parseIdentifier(currentFile)));
 			}
 		}
+		return user;
 	}
 
 	private Account createAccount(String currentAccount) throws FileNotFoundException {
-		String path = System.getProperty("user.dir") + currentAccount + ".txt";
+		String path = System.getProperty("user.dir") + "\\Accounts\\" + currentAccount + ".txt";
 		File account = new File(path);
 		
 		if (account.exists()) {
@@ -281,7 +297,7 @@ public class FakeDataBase {
 	}
 
 	private String parseFirstName(String string) {
-		String[] firstName = string.split("Prénom: ");
+		String[] firstName = string.split("PrÃ©nom: ");
 		return firstName[1];
 	}
 
@@ -321,7 +337,7 @@ public class FakeDataBase {
 	}
 	
 	private String parseNbAccount(String string) {
-		String[] nbAccount = string.split("Numéro de compte: ");
+		String[] nbAccount = string.split("NumÃ©ro de compte: ");
 		return nbAccount[1];
 	}
 	
@@ -336,7 +352,7 @@ public class FakeDataBase {
 	}
 	
 	private boolean parseOvercraft(String string) {
-		String[] overcraft = string.split("Droit de découvert: ");
+		String[] overcraft = string.split("Droit de dÃ©couvert: ");
 		if(overcraft[1].equals("true")) {
 			return true;
 		}

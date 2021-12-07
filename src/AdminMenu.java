@@ -12,9 +12,9 @@ public class AdminMenu extends AdvisorMenu {
 	@Override
 	protected ArrayList<String> addActionsInList() {
 		listAdminActions.addAll(super.addActionsInList());
-		listAdminActions.add("Créer une agence");
-		listAdminActions.add("Désactiver un compte");
-		listAdminActions.add("Désactiver un client");
+		listAdminActions.add("CrÃ©er une agence");
+		listAdminActions.add("DÃ©sactiver un compte");
+		listAdminActions.add("DÃ©sactiver un client");
 		return listAdminActions;
 	}
 	

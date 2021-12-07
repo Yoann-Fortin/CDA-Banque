@@ -1,7 +1,7 @@
 Type de compte: Compte courant
-Numéro de compte: 987654321
+NumÃ©ro de compte: 987654321
 Code agence: 123
 Identifiant client: 123456789
 Solde: 250.0
-Droit de découvert: false
+Droit de dÃ©couvert: false
 Compte actif: true

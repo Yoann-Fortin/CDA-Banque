@@ -17,10 +17,10 @@ public abstract class UserMenu {
 	protected ArrayList<String> listUserActions = new ArrayList<String>(Arrays.asList(
 			"Consultez vos informations personnelles",
 			"Consulez vos comptes",
-			"Consutez les opérations d'un compte",
-			"Imprimer les oprations d'un compte",
+			"Consutez les opÃ©rations d'un compte",
+			"Imprimer les opÃ©rations d'un compte",
 			"Effectuer un virement",
-			"Effectuer un dépôt",
+			"Effectuer un dÃ©pÃ´t",
 			"Effectuer un retrait"
 			));
 
@@ -50,6 +50,7 @@ public abstract class UserMenu {
 			displayTransactionUserAccount();
 			break;
 		case 4:
+			writeTransactionUserAccount();
 			break;
 		case 5:
 			transfer();
@@ -68,6 +69,21 @@ public abstract class UserMenu {
 		}
 	}
 
+	private void writeTransactionUserAccount() throws IOException {
+		Account[] accounts = new Account[user.getListAccounts().size()];
+		user.getListAccounts().toArray(accounts);
+		
+		int choiceUser;
+		
+		displayListAccountsOfUser();
+		
+		System.out.println();
+		System.out.println("Choisissez le compte Ã  imprimer les transactions");
+		choiceUser = scanner.nextInt();
+		
+		accounts[choiceUser - 1].printTransactionsText();
+	}
+
 	protected void displayPersonnalInformations() {
 		System.out.println(user.getLastName() + " " + user.getFirstName());
 		System.out.println(user.getBirthDate());
@@ -79,7 +95,7 @@ public abstract class UserMenu {
 		user.checkAccounts();
 	}
 	
-	protected void displayTransactionUserAccount() {
+	protected void displayTransactionUserAccount() throws FileNotFoundException {
 		Account[] accounts = new Account[user.getListAccounts().size()];
 		user.getListAccounts().toArray(accounts);
 		
@@ -88,30 +104,30 @@ public abstract class UserMenu {
 		displayListAccountsOfUser();
 		
 		System.out.println();
-		System.out.println("Choisissez le compte à afficher les transactions");
+		System.out.println("Choisissez le compte Ã  afficher les transactions");
 		choiceUser = scanner.nextInt();
 		
 		accounts[choiceUser - 1].printTransactions();
 	}
 	
-	protected void transfer() {
+	protected void transfer() throws IOException {
 		Account[] accounts = new Account[user.getListAccounts().size()];
 		int debitAccount;
 		int creditAccount;
 		
 		displayListAccountsOfUser();
 		
-		System.out.println("Quel compte voulez vous débiter ?");
+		System.out.println("Quel compte voulez vous dÃ©biter ?");
 		debitAccount = scanner.nextInt() - 1;
 		
-		System.out.println("Quel compte voulez vous créditer ?");
+		System.out.println("Quel compte voulez vous crÃ©diter ?");
 		creditAccount = scanner.nextInt() - 1;
 		
 		user.getListAccounts().toArray(accounts);
 		accounts[debitAccount].transfer(accounts[creditAccount]);
 	}
 	
-	protected void add() {
+	protected void add() throws IOException {
 		Account[] accounts = new Account[user.getListAccounts().size()];
 		user.getListAccounts().toArray(accounts);
 		
@@ -120,16 +136,16 @@ public abstract class UserMenu {
 		
 		displayListAccountsOfUser();
 		
-		System.out.println("Quel compte voulez vous créditer ?");
+		System.out.println("Quel compte voulez vous crï¿½diter ?");
 		choiceUser = scanner.nextInt() - 1;
 		
-		System.out.println("Veuillez saisir le montant à créditer.");
+		System.out.println("Veuillez saisir le montant ï¿½ crï¿½diter.");
 		value = scanner.nextInt();
 		
 		accounts[choiceUser].addCash(value);
 	}
 	
-	protected void soustract() {
+	protected void soustract() throws IOException {
 		Account[] accounts = new Account[user.getListAccounts().size()];
 		user.getListAccounts().toArray(accounts);
 		
@@ -138,10 +154,10 @@ public abstract class UserMenu {
 		
 		displayListAccountsOfUser();
 		
-		System.out.println("Quel compte voulez vous débiter ?");
+		System.out.println("Quel compte voulez vous dï¿½biter ?");
 		choiceUser = scanner.nextInt() - 1;
 		
-		System.out.println("Veuillez saisir le montant à débiter.");
+		System.out.println("Veuillez saisir le montant ï¿½ dï¿½biter.");
 		value = scanner.nextInt();
 		
 		accounts[choiceUser].soustractCash(value);

@@ -2,7 +2,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Scanner;
 
 public class Advisor extends User {
@@ -27,7 +29,7 @@ public class Advisor extends User {
 		identifier = scanner.nextLine();
 		System.out.println("Veuillez saisir le nom");
 		lastName = scanner.nextLine();
-		System.out.println("Veuillez saisir le prénom");
+		System.out.println("Veuillez saisir le prï¿½nom");
 		firstName = scanner.nextLine();
 		System.out.println("Veuillez saisir la date de naissance");
 		birthDate = scanner.nextLine();
@@ -40,7 +42,7 @@ public class Advisor extends User {
 		System.out.println("Veuillez saisir un mot de passe");
 		password = scanner.nextLine();
 		
-		path = System.getProperty("user.dir") + "\\" + identifier + ".txt";
+		path = System.getProperty("user.dir") + "\\Users\\" + identifier + ".txt";
 		
 		try {
 			File client = new File(path);
@@ -48,7 +50,7 @@ public class Advisor extends User {
 				try {
 					FileWriter writer = new FileWriter(path);
 					writer.write("Nom: " + lastName + "\n");
-					writer.write("Prénom: " + firstName + "\n");
+					writer.write("Prï¿½nom: " + firstName + "\n");
 					writer.write("Date de Naissance: " + birthDate + "\n");
 					writer.write("Adresse: " + adress + "\n");
 					writer.write("Email: " + email + "\n");
@@ -74,7 +76,7 @@ public class Advisor extends User {
 					e.printStackTrace();
 				}
 			} else {
-				System.out.println("Ce client existe déjà");
+				System.out.println("Ce client existe dÃ©jÃ ");
 			}
 		} catch (Exception e) {
 			System.out.println("Une erreur est survenue");
@@ -93,47 +95,57 @@ public class Advisor extends User {
 		accountType = scanner.nextLine();
 		System.out.println("Saisissez l'identifiant client");
 		userID = scanner.nextLine();
-		System.out.println("Saisissez un numéro de compte ");
+		System.out.println("Saisissez un numÃ©ro de compte ");
 		nbAccount = scanner.nextInt();
 		System.out.println("Saissez le code agence ");
 		agencyCode = scanner.nextInt();
-		System.out.println("Saisissez le montant du dépôt");
+		System.out.println("Saisissez le montant du dÃ©pÃ´t");
 		balance = scanner.nextInt();
 		
-		String path = System.getProperty("user.dir") + "\\" + nbAccount + ".txt";
+		String pathAccount = System.getProperty("user.dir") + "\\Accounts\\" + nbAccount + ".txt";
+		String pathTransaction = System.getProperty("user.dir") + "\\Transactions\\" + nbAccount + ".txt";
 		
 		try {
-			File account = new File(path);
-			if(account.createNewFile()) {
+			File account = new File(pathAccount);
+			File transaction = new File(pathTransaction);
+			if(account.createNewFile() && transaction.createNewFile()) {
 				try {
-					FileWriter writer = new FileWriter(path);
-					writer.write("Type de compte: " + accountType + "\n");
-					writer.write("Numéro de compte: " + nbAccount + "\n");
-					writer.write("Code agence: " + agencyCode + "\n");
-					writer.write("Identifiant client: " + userID + "\n");
-					writer.write("Solde: " + balance + "\n");
-					writer.write("Droit de découvert: " + false + "\n");
-					writer.write("Compte actif: " + true + "\n");
-					writer.close();
+					FileWriter writerAccount = new FileWriter(pathAccount);
+					writerAccount.write("Type de compte: " + accountType + "\n");
+					writerAccount.write("NumÃ©ro de compte: " + nbAccount + "\n");
+					writerAccount.write("Code agence: " + agencyCode + "\n");
+					writerAccount.write("Identifiant client: " + userID + "\n");
+					writerAccount.write("Solde: " + balance + "\n");
+					writerAccount.write("Droit de dÃ©couvert: " + false + "\n");
+					writerAccount.write("Compte actif: " + true + "\n");
+					writerAccount.close();
+					
+					FileWriter writerTransaction = new FileWriter(pathTransaction);
+					writerTransaction.write("Compte crÃ©e le :" + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+					writerTransaction.close();
 					
 				} catch (Exception e) {
 					System.out.println("Une erreur est survenue");
 					e.printStackTrace();
 				}
 			} else {
-				System.out.println("Ce numéro de compte existe déjà");
+				System.out.println("Ce numÃ©ro de compte existe dÃ©jÃ ");
 			}
 		} catch (Exception e) {
 			System.out.println("Une erreur est survenue");
 			e.printStackTrace();
 		}
 		
-		if(accountType.equals("PEL")) {
+		switch (accountType) {
+		case "PEL":
 			new PEL(nbAccount, agencyCode, new FakeDataBase(Integer.toString(nbAccount)).createUserWithIdentifier(userID), balance, false);
-		} else if(accountType.equals("Livret A")) {
+			break;
+		case "Livret A":
 			new LivretA(nbAccount, agencyCode, new FakeDataBase(Integer.toString(nbAccount)).createUserWithIdentifier(userID), balance, false);
-		} else {
+			break;
+		default:
 			new CurrentAccount(nbAccount, agencyCode, new FakeDataBase(Integer.toString(nbAccount)).createUserWithIdentifier(userID), balance, false);
+			break;
 		}
 	}
 	
@@ -141,7 +153,7 @@ public class Advisor extends User {
 		System.out.println("Saisissez l'identifiant client");
 		String user = scanner.nextLine();
 		
-		String path = System.getProperty("user.dir") + user + ".txt";
+		String path = System.getProperty("user.dir") + "\\Users\\" + user + ".txt";
 		
 		File client = new File(path);
 		
@@ -171,7 +183,7 @@ public class Advisor extends User {
 			try {
 				FileWriter writer = new FileWriter(path);
 				writer.write("Nom: " + lastName + "\n");
-				writer.write("Prénom: " + firstName + "\n");
+				writer.write("Prï¿½nom: " + firstName + "\n");
 				writer.write("Date de Naissance: " + birthDate + "\n");
 				writer.write("Adresse: " + adress + "\n");
 				writer.write("Email: " + email + "\n");
